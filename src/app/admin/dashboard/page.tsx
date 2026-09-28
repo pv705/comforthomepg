@@ -25,18 +25,21 @@ export default function AdminDashboard() {
       fetch('/api/inquiries').then((r) => r.json()),
       fetch('/api/rooms').then((r) => r.json()),
     ]).then(([bookings, inquiries, rooms]) => {
+      const bookingList = Array.isArray(bookings) ? bookings : [];
+      const inquiryList = Array.isArray(inquiries) ? inquiries : [];
+      const roomList = Array.isArray(rooms) ? rooms : [];
       setStats({
-        totalBookings: bookings.length,
-        pendingBookings: bookings.filter((b: any) => b.status === 'Pending').length,
-        confirmedBookings: bookings.filter((b: any) => b.status === 'Confirmed').length,
-        totalInquiries: inquiries.length,
-        newInquiries: inquiries.filter((i: any) => i.status === 'New').length,
-        totalRooms: rooms.length,
-        availableRooms: rooms.filter((r: any) => r.status === 'available').length,
+        totalBookings: bookingList.length,
+        pendingBookings: bookingList.filter((b: any) => b.status === 'Pending').length,
+        confirmedBookings: bookingList.filter((b: any) => b.status === 'Confirmed').length,
+        totalInquiries: inquiryList.length,
+        newInquiries: inquiryList.filter((i: any) => i.status === 'New').length,
+        totalRooms: roomList.length,
+        availableRooms: roomList.filter((r: any) => r.status === 'available').length,
       });
-      setRecentBookings(bookings.slice(0, 5));
+      setRecentBookings(bookingList.slice(0, 5));
       setLoading(false);
-    });
+    }).catch(() => setLoading(false));
   }, []);
 
   if (loading) {

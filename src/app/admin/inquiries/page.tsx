@@ -25,7 +25,11 @@ export default function AdminInquiries() {
     fetch(url)
       .then((r) => r.json())
       .then((data) => {
-        setInquiries(data);
+        setInquiries(Array.isArray(data) ? data : []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setInquiries([]);
         setLoading(false);
       });
   };

@@ -31,7 +31,11 @@ export default function AdminBookings() {
     fetch(url)
       .then((r) => r.json())
       .then((data) => {
-        setBookings(data);
+        setBookings(Array.isArray(data) ? data : []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setBookings([]);
         setLoading(false);
       });
   };

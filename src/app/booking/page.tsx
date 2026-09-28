@@ -42,8 +42,8 @@ function BookingForm() {
   useEffect(() => {
     fetch('/api/rooms')
       .then((res) => res.json())
-      .then((data) => setRooms(data))
-      .catch(() => {})
+      .then((data) => setRooms(Array.isArray(data) ? data : []))
+      .catch(() => setRooms([]))
       .finally(() => setLoading(false));
   }, []);
 

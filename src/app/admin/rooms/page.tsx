@@ -39,7 +39,11 @@ export default function AdminRooms() {
     fetch('/api/rooms')
       .then((r) => r.json())
       .then((data) => {
-        setRooms(data);
+        setRooms(Array.isArray(data) ? data : []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setRooms([]);
         setLoading(false);
       });
   };
