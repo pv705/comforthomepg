@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Room {
+  id             Int         @id @default(autoincrement())
+  name           String
+  type         String // Single, Double, Triple
+  acPrice        Float
+  nonAcPrice     Float
+  description    String      @db.Text
+  amenities      String      @db.Text // JSON array as string
+  totalRooms     Int
+  availableRooms Int
+  status         String      @default("available") // available, maintenance
+  images         RoomImage[]
+  bookings       Booking[]
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model RoomImage {
+  id     Int    @id @default(autoincrement())
+  url    String
+  roomId Int
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+}
+
+model Booking {
+  id           Int      @id @default(autoincrement())
+  roomId       Int
+  room         Room     @relation(fields: [roomId], references: [id])
+  guestName    String
+  phone        String
+  email        String
+  checkInDate  DateTime
+  checkOutDate DateTime
+  roomType     String // AC, Non-AC
+  status       String   @default("Pending") // Pending, Confirmed, Cancelled
+  message      String?  @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Inquiry {
+  id        Int      @id @default(autoincrement())
+  name      String
+  phone     String
+  email     String
+  subject   String
+  message   String   @db.Text
+  status    String   @default("New") // New, Contacted, Resolved
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AdminUser {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
