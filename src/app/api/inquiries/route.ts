@@ -1,17 +1,13 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
-
-const inquirySchema = z.object({
-  name: z.string().min(2).max(100),
-  phone: z.string().min(10).max(15),
-  email: z.string().email(),
-  subject: z.string().min(2).max(200),
-  message: z.string().min(10).max(2000),
-});
+import { isAdmin } from '@/lib/auth';
+import { inquirySchema } from '@/lib/inquiry-validation';
+import { readJson, RequestError } from '@/lib/request-body';
 
 export async function GET(request: Request) {
   try {
+    if (!(await isAdmin())) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
 
@@ -19,6 +15,7 @@ export async function GET(request: Request) {
     const inquiries = await prisma.inquiry.findMany({
       where,
       orderBy: { createdAt: 'desc' },
+      take: 200,
     });
     return NextResponse.json(inquiries);
   } catch (error) {
@@ -28,15 +25,18 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const validated = inquirySchema.parse(body);
-
-    const inquiry = await prisma.inquiry.create({
-      data: validated,
+    const { website, ...data } = inquirySchema.parse(await readJson(request));
+    const recent = await prisma.inquiry.count({
+      where: { phone: data.phone, createdAt: { gte: new Date(Date.now() - 10 * 60 * 1000) } },
+    });
+    if (recent >= 3) return NextResponse.json({ error: 'We have your recent requests. Please try again later or contact us on WhatsApp.' }, { status: 429 });
+    await prisma.inquiry.create({
+      data,
     });
 
-    return NextResponse.json(inquiry, { status: 201 });
+    return NextResponse.json({ success: true }, { status: 201 });
   } catch (error) {
+    if (error instanceof RequestError) return NextResponse.json({ error: error.message }, { status: error.status });
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.errors[0].message }, { status: 400 });
     }

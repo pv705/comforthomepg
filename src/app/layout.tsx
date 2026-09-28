@@ -4,6 +4,7 @@ import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import WhatsAppButton from '@/components/WhatsAppButton';
+import LeadCapture from '@/components/LeadCapture';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -37,10 +38,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
+        <LeadCapture>
         <Navbar />
         <main className="min-h-screen">{children}</main>
         <Footer />
         <WhatsAppButton />
+        </LeadCapture>
       </body>
     </html>
   );

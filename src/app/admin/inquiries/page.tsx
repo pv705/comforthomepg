@@ -17,18 +17,28 @@ interface Inquiry {
 export default function AdminInquiries() {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
   const [filter, setFilter] = useState('all');
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
 
   const fetchInquiries = () => {
+    setLoading(true);
+    setError('');
     const url = filter === 'all' ? '/api/inquiries' : `/api/inquiries?status=${filter}`;
     fetch(url)
-      .then((r) => r.json())
+      .then(async (r) => {
+        if (!r.ok) throw new Error(r.status === 401 ? 'Please sign in again to see inquiries.' : 'Could not load inquiries. Please retry.');
+        const data = await r.json();
+        if (!Array.isArray(data)) throw new Error('Unexpected response. Please retry.');
+        return data;
+      })
       .then((data) => {
         setInquiries(Array.isArray(data) ? data : []);
         setLoading(false);
       })
-      .catch(() => {
+      .catch((cause) => {
+        setError(cause.message);
         setInquiries([]);
         setLoading(false);
       });
@@ -39,29 +49,38 @@ export default function AdminInquiries() {
   }, [filter]);
 
   const updateStatus = async (id: number, status: string) => {
-    await fetch(`/api/inquiries/${id}`, {
+    setBusy(true);
+    setError('');
+    try {
+    const response = await fetch(`/api/inquiries/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),
     });
+    if (!response.ok) throw new Error('Could not update this inquiry. Please try again.');
     fetchInquiries();
     setSelectedInquiry(null);
+    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Update failed.'); }
+    finally { setBusy(false); }
   };
 
   const handleDelete = async (id: number) => {
     if (!confirm('Delete this inquiry?')) return;
-    await fetch(`/api/inquiries/${id}`, { method: 'DELETE' });
+    try {
+    const response = await fetch(`/api/inquiries/${id}`, { method: 'DELETE' });
+    if (!response.ok) throw new Error('Could not delete this inquiry. Please try again.');
     fetchInquiries();
+    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Delete failed.'); }
   };
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap gap-4 items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Inquiries</h1>
-          <p className="text-gray-500">Manage contact form submissions</p>
+          <p className="text-gray-500">Visitor callbacks, room interests and visit requests · latest 200</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {['all', 'New', 'Contacted', 'Resolved'].map((status) => (
             <button
               key={status}
@@ -78,11 +97,13 @@ export default function AdminInquiries() {
         </div>
       </div>
 
+      {error && <div role="alert" className="bg-red-50 text-red-800 p-4 mb-4 rounded-lg">{error} <button className="underline" onClick={fetchInquiries}>Retry</button></div>}
+
       {loading ? (
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand" />
         </div>
-      ) : inquiries.length === 0 ? (
+      ) : !error && inquiries.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm p-12 text-center">
           <div className="text-gray-400 text-lg">No inquiries found</div>
         </div>
@@ -90,8 +111,8 @@ export default function AdminInquiries() {
         <div className="space-y-4">
           {inquiries.map((inquiry) => (
             <div key={inquiry.id} className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
+              <div className="flex flex-wrap gap-4 items-start justify-between">
+                <div className="flex-1 min-w-0 break-words">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="font-semibold text-gray-900">{inquiry.name}</h3>
                     <span
@@ -110,13 +131,14 @@ export default function AdminInquiries() {
                     {inquiry.subject} • {new Date(inquiry.createdAt).toLocaleDateString('en-IN')}
                   </div>
                   <p className="text-gray-700">{inquiry.message}</p>
-                  <div className="mt-3 flex gap-4 text-sm">
+                  <div className="mt-3 flex flex-wrap gap-4 text-sm">
                     <a href={`tel:${inquiry.phone}`} className="text-brand hover:underline">
                       {inquiry.phone}
                     </a>
-                    <a href={`mailto:${inquiry.email}`} className="text-brand hover:underline">
+                    {inquiry.email && <a href={`mailto:${inquiry.email}`} className="text-brand hover:underline">
                       {inquiry.email}
-                    </a>
+                    </a>}
+                    <a href={`https://wa.me/${inquiry.phone.replace(/\D/g, '').length === 10 ? '91' : ''}${inquiry.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hi ${inquiry.name}, this is Comfort Home PG following up on your inquiry: ${inquiry.subject}.`)}`} target="_blank" rel="noopener noreferrer" className="text-brand underline">Reply on WhatsApp ↗</a>
                   </div>
                 </div>
                 <div className="flex gap-2 ml-4">
@@ -142,10 +164,12 @@ export default function AdminInquiries() {
       {/* Inquiry Detail Modal */}
       {selectedInquiry && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full">
+          <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90dvh] overflow-y-auto" role="dialog" aria-modal="true" aria-label="Inquiry details">
+            {error && <p role="alert" className="p-4 text-red-800">{error}</p>}
             <div className="p-6 border-b flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900">Inquiry Details</h2>
               <button
+                aria-label="Close inquiry details"
                 onClick={() => setSelectedInquiry(null)}
                 className="text-gray-400 hover:text-gray-600"
               >
@@ -171,9 +195,9 @@ export default function AdminInquiries() {
                   </a>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-500">Email</div>
+                    <div className="text-sm text-gray-500">Email (optional)</div>
                   <a href={`mailto:${selectedInquiry.email}`} className="text-brand font-medium">
-                    {selectedInquiry.email}
+                    {selectedInquiry.email || 'Not provided'}
                   </a>
                 </div>
               </div>
@@ -186,6 +210,7 @@ export default function AdminInquiries() {
               {selectedInquiry.status === 'New' && (
                 <button
                   onClick={() => updateStatus(selectedInquiry.id, 'Contacted')}
+                  disabled={busy}
                   className="flex-1 bg-yellow-500 text-white py-2 rounded-lg font-medium hover:bg-yellow-600 transition-colors"
                 >
                   Mark Contacted
@@ -194,6 +219,7 @@ export default function AdminInquiries() {
               {selectedInquiry.status !== 'Resolved' && (
                 <button
                   onClick={() => updateStatus(selectedInquiry.id, 'Resolved')}
+                  disabled={busy}
                   className="flex-1 bg-green-500 text-white py-2 rounded-lg font-medium hover:bg-green-600 transition-colors"
                 >
                   Mark Resolved

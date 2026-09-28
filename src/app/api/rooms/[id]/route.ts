@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { isAdmin } from '@/lib/auth';
 
 export async function GET(
   request: Request,
@@ -27,6 +28,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!(await isAdmin())) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const { id } = await params;
     const body = await request.json();
     const { name, type, acPrice, nonAcPrice, description, amenities, totalRooms, availableRooms, status, images } = body;
@@ -62,6 +64,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!(await isAdmin())) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const { id } = await params;
     await prisma.room.delete({
       where: { id: parseInt(id) },

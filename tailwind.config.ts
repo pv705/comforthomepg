@@ -22,9 +22,9 @@ const config: Config = {
           900: '#1e3a8a',
         },
         brand: {
-          DEFAULT: '#2563eb',
-          dark: '#1e40af',
-          light: '#3b82f6',
+          DEFAULT: '#174c42',
+          dark: '#10392f',
+          light: '#48796d',
         },
       },
       fontFamily: {
