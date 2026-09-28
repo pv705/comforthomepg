@@ -16,10 +16,12 @@
 .site-container { width: min(1240px, calc(100% - 64px)); margin-inline: auto; }
 .site-header { position: sticky; top: 0; z-index: 40; background: #faf8f1ee; backdrop-filter: blur(18px); border-bottom: 1px solid #203c3415; }
 .nav-inner { display: flex; align-items: center; justify-content: space-between; min-height: 88px; gap: 24px; font-size: 13px; }
-.wordmark { display: inline-flex; align-items: center; gap: 12px; font-size: 21px; font-weight: 650; letter-spacing: -.8px; }
-.wordmark small { display: block; margin-top: 3px; font-size: 8px; letter-spacing: 1.8px; font-weight: 500; }
-.brand-mark { display: inline-block; background: #174c42; color: #faf8f1; border-radius: 14px; padding: 10px 12px; letter-spacing: -3px; font: italic 30px Georgia, serif; }
-.brand-mark span { color: #ebac87; font: 17px sans-serif; margin-left: 3px; }
+.wordmark { display: inline-flex; align-items: center; gap: 12px; }
+.wordmark-text { font-family: Georgia, 'Times New Roman', serif; font-size: 23px; font-weight: 500; letter-spacing: -.5px; line-height: 1; color: #163c32; }
+.site-footer .wordmark-text { color: #f1efe5; }
+.wordmark-text small { display: block; margin-top: 5px; font-family: Inter, system-ui, sans-serif; font-size: 8px; font-weight: 650; letter-spacing: 2.2px; color: #7a857c; }
+.site-footer .wordmark-text small { color: #8b978d; }
+.brand-mark { display: inline-grid; place-items: center; width: 44px; height: 44px; background: #174c42; color: #faf8f1; border-radius: 14px; font: italic 26px Georgia, serif; letter-spacing: -2px; box-shadow: inset 0 -3px 0 #0d2c25; }
 .menu-button { border: 1px solid #203c3430; border-radius: 99px; padding: 9px 16px; font-size: 13px; }
 .mobile-nav { padding-block: 16px 24px; display: grid; gap: 20px; }
 .btn-primary, .btn-secondary, .btn-whatsapp, .btn-coral { border-radius: 99px; font-size: 14px; min-height: 48px; padding: 14px 23px; transition: transform .2s, background .2s, box-shadow .2s; }
@@ -146,9 +148,9 @@ button:disabled { opacity: .6; cursor: wait; transform: none !important; }
 @media (max-width: 767px) {
   .site-container { width: calc(100% - 40px); }
   .nav-inner { min-height: 74px; }
-  .wordmark { font-size: 18px; gap: 9px; }
-  .brand-mark { font-size: 24px; padding: 8px 10px; }
-  .wordmark small { font-size: 7px; letter-spacing: 1px; }
+  .wordmark-text { font-size: 19px; }
+  .brand-mark { width: 38px; height: 38px; font-size: 22px; }
+  .wordmark-text small { font-size: 7px; letter-spacing: 1.4px; }
   .home-hero { padding-top: 40px; padding-bottom: 30px; }
   .hero-grid, .location-grid, .visit-panel { grid-template-columns: 1fr; gap: 32px; }
   .hero-copy h1 { font-size: clamp(40px, 9vw, 62px); }
