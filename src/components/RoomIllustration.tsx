@@ -29,24 +29,31 @@ export default function RoomIllustration({ variant = 'single', shared = false }:
   );
   if (kind === 'triple') return (
     <svg viewBox="0 0 640 510" fill="none" aria-hidden="true" className="room-illustration">
-      <path d="M60 140 350 38 588 166v205L300 491 60 351Z" fill="#e9e4d2" />
-      <path d="m60 140 240 120v231L60 351Z" fill="#d8d2b6" />
-      <path d="m300 260 288-94v205L300 491Z" fill="#f7f3e4" />
-      <path d="m60 351 240 140 288-120-240-114Z" fill="#bcb294" />
-      <path d="m98 161 150 72v140l-150-78Z" fill="#174c42" />
-      <path d="m108 176 130 62v112l-130-62Z" fill="#b1d1c0" />
-      <path d="m130 207 4 102m86-62 3 76" stroke="#f4e8cf" strokeWidth="6" />
-      <path d="m300 300 90-30v150l-90 34Z" fill="#855339" />
-      <path d="m312 312 66-22v34l-66 24Z" fill="#fdf9f0" />
-      <path d="m316 316 58-19v24l-58 21Z" fill="#48796d" />
-      <path d="m312 362 66-22v34l-66 24Z" fill="#fdf9f0" />
-      <path d="m316 366 58-19v24l-58 21Z" fill="#ca835f" />
-      <path d="m404 330 150-50 52 24-150 56Z" fill="#9e694b" />
-      <path d="m404 330 104 56v28l-104-58Z" fill="#855339" />
-      <path d="m414 320 140-46 46 24-140 50Z" fill="#fdf9f0" />
-      <path d="m420 317 66 34 50-17-64-35Z" fill="#d9ac65" />
-      <path d="m150 348v-50" stroke="#315d53" strokeWidth="5" />
-      <path d="M150 312c-36 0-41-29-29-33 18-5 29 33 29 33Zm0-8c30-6 44-40 29-41-15-2-29 41-29 41Z" fill="#48796d" />
+      <path d="M60 140 350 38 588 166v205L300 491 60 351Z" fill="#ece5d1" />
+      <path d="m60 140 240 120v231L60 351Z" fill="#dbd3b4" />
+      <path d="m300 260 288-94v205L300 491Z" fill="#f8f3e2" />
+      <path d="m60 351 240 140 288-120-240-114Z" fill="#bdb295" />
+      <path d="m98 161 104 50v98l-104-54Z" fill="#174c42" />
+      <path d="m105 174 90 43v74l-90-42Z" fill="#b1d1c0" />
+      <path d="m150 195 1 72m-44-58 88 42" stroke="#f4e8cf" strokeWidth="6" />
+      <path d="m120 336 128-42 46 20-128 48Z" fill="#9e694b" />
+      <path d="m120 336 88 48v24l-88-50Z" fill="#855339" />
+      <path d="m248 314 46 20v48l-46-22Z" fill="#70462f" />
+      <path d="m128 326 120-39 40 19-120 44Z" fill="#fdf9f0" />
+      <path d="m134 322 56 29 42-14-54-30Z" fill="#48796d" />
+      <path d="m256 336 128-42 46 20-128 48Z" fill="#9e694b" />
+      <path d="m256 336 88 48v24l-88-50Z" fill="#855339" />
+      <path d="m384 314 46 20v48l-46-22Z" fill="#70462f" />
+      <path d="m264 326 120-39 40 19-120 44Z" fill="#fdf9f0" />
+      <path d="m270 322 56 29 42-14-54-30Z" fill="#ca835f" />
+      <path d="m392 336 128-42 46 20-128 48Z" fill="#9e694b" />
+      <path d="m392 336 88 48v24l-88-50Z" fill="#855339" />
+      <path d="m520 314 46 20v48l-46-22Z" fill="#70462f" />
+      <path d="m400 326 120-39 40 19-120 44Z" fill="#fdf9f0" />
+      <path d="m406 322 56 29 42-14-54-30Z" fill="#d9ac65" />
+      <path d="m300 400 40-13v60l-40 14Z" fill="#c6b68f" />
+      <path d="m306 406 28-9v46l-28 10Z" fill="#f9edcf" />
+      <circle cx="320" cy="396" r="6" fill="#cc825d" />
     </svg>
   );
   return (
